@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Barang {
+  id            String @id @default(uuid())
+  kode          String @unique
+  nama          String
+  harga         Int
+  stok          Int
+  perusahaan_id String
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Perusahaan {
+  id      String @id @default(uuid())
+  nama    String
+  kode    String @db.VarChar(3)
+  alamat  String
+  no_telp String
+}
