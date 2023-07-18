@@ -25,3 +25,9 @@ model Perusahaan {
   alamat  String
   no_telp String
 }
+
+model User {
+  id       String @id @default(uuid())
+  username String
+  password String
+}
