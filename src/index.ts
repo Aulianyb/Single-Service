@@ -17,7 +17,7 @@ app.use(express.json())
 app.use((req, res, next) =>{
     res.setHeader('Access-Control-Allow-Origin', 'https://ohl-fe.vercel.app');
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next(); 
 })
@@ -307,8 +307,12 @@ app.post('/login', async (req, res) =>{
                 message : "login berhasil", 
                 data : logData
             }
+            
+            res.cookie('jwt', token,{
+                httpOnly: true
+            })
+
             res.send(apiResponse)
-            console.log("hehe it works"); 
         }
     } catch {
         const apiResponse : Response<LoginData> = {
@@ -321,35 +325,28 @@ app.post('/login', async (req, res) =>{
     }
 })
 
-// app.get('/self', async (req, res)=>{
-//     try{
-//         const token = jwt.sign({ username }, 'secret-Key')
-//         const Admin : User = {
-//             username : adminData.username
-//         }
+app.get('/self', async (req, res)=>{
+    var apiResponse : Response<User>
+    try{
+        // NOTE : Buat Debuggging aja
+        const admin : User = {
+            username : "admin"
+        }
 
-//         const logData : LoginData = {
-//             user : Admin, 
-//             token : token
-//         }
-
-//         const apiResponse : Response<LoginData> = {
-//             status: "success",
-//             message : "login berhasil", 
-//             data : logData
-//         }
-
-//         res.send(apiResponse)
-//     } catch {
-//         const apiResponse : Response<LoginData> = {
-//             status: "error",
-//             message : "login gagal", 
-//             data : null
-//         }
-
-//         res.send(apiResponse)
-//     }
-// })
+        apiResponse = {
+            status : "success", 
+            message : "GET self berhasil", 
+            data : admin
+        }
+    } catch {
+        apiResponse = {
+            status: "error",
+            message : "login gagal", 
+            data : null
+        }
+    }
+    res.send(apiResponse)
+})
 
 app.listen(port, ()=> {
     
