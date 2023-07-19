@@ -16,8 +16,9 @@ app.use(express.json())
 
 app.use((req, res, next) =>{
     res.setHeader('Access-Control-Allow-Origin', 'https://ohl-fe.vercel.app');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next(); 
 })
 
@@ -46,8 +47,22 @@ app.get('/perusahaan/:id', async(req, res) =>{
 
 //FIX ME : Ini juga betulin ya
 app.get('/perusahaan', async(req, res) =>{
-    const list_Perusahaan = await prisma.perusahaan.findMany()
-    res.json(list_Perusahaan)
+    var apiResponse : Response<Perusahaan[]>
+    try{
+        const list_Perusahaan = await prisma.perusahaan.findMany()
+        apiResponse = {
+            status : "success", 
+            message : "berhasil GET list barang", 
+            data : list_Perusahaan
+        }
+    } catch {
+        apiResponse = {
+            status : "error", 
+            message : "gagal GET list barang", 
+            data : null
+        }
+    }
+    res.send(apiResponse)  
 })
 
 app.post('/perusahaan', async(req, res) =>{
@@ -165,12 +180,22 @@ app.get('/barang/:id', async(req, res) =>{
 
 //REMINDER : Tolong kerjain ini pls janlup 
 app.get('/barang', async(req, res)=>{
+    var apiResponse : Response<Barang[]>
     try {
         const list_barang = await prisma.barang.findMany()
-        res.json(list_barang); 
+        apiResponse = {
+            status : "success", 
+            message : "berhasil GET list barang", 
+            data : list_barang
+        }
     } catch {
-
+        apiResponse = {
+            status : "error", 
+            message : "gagal GET list barang", 
+            data : null
+        }
     }
+    res.send(apiResponse)
 })
 
 app.post('/barang', async(req, res) =>{
@@ -283,7 +308,7 @@ app.post('/login', async (req, res) =>{
                 data : logData
             }
             res.send(apiResponse)
-            console.log("oh shit it works!")
+            console.log("hehe it works"); 
         }
     } catch {
         const apiResponse : Response<LoginData> = {
