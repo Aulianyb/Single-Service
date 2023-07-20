@@ -166,6 +166,13 @@ app.delete('/perusahaan/:id', async(req, res)=>{
         const perusahaanData = await prisma.perusahaan.delete({
             where: {id : req.params.id}
         })
+
+        const barangData = await prisma.barang.deleteMany({
+            where: {
+                perusahaan_id : req.params.id
+            }
+        })
+
         apiResponse = {
             status : "success", 
             message : "perusahaan berhasil dihapus!", 
@@ -359,7 +366,7 @@ app.post('/login', async (req, res) =>{
                 data : logData
             }
             
-            res.cookie('jwt', token,{
+            res.cookie("jwt", "token",{
                 httpOnly: true
             })
 
@@ -379,6 +386,7 @@ app.post('/login', async (req, res) =>{
 //FIX ME : Masih ngehack biar bisa masuk lol
 app.get('/self', async (req, res)=>{
     var apiResponse : Response<User>
+
     try{
         // NOTE : Buat Debuggging aja
         const admin : User = {
