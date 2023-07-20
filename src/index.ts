@@ -44,12 +44,46 @@ app.get('/perusahaan/:id', async(req, res) =>{
     res.send(apiResponse)
 })
 
-
-//FIX ME : Ini juga betulin ya
 app.get('/perusahaan', async(req, res) =>{
+    const q = req.query.q as string
     var apiResponse : Response<Perusahaan[]>
+    var list_Perusahaan
     try{
-        const list_Perusahaan = await prisma.perusahaan.findMany()
+        if (q != undefined){
+            list_Perusahaan = await prisma.perusahaan.findMany({
+                where : {
+                    OR : [
+                        {
+                            nama : {
+                                contains : q
+                            }
+                        }, 
+                        {
+                            kode : {
+                                contains : q
+                            }
+                        }
+                    ]
+                    }
+            })
+        } else{
+            list_Perusahaan = await prisma.perusahaan.findMany({
+                where : {
+                    AND : [
+                        {
+                            nama : {
+                                contains : q
+                            }
+                        }, 
+                        {
+                            kode : {
+                                contains : q
+                            }
+                        }
+                    ]
+                    }
+            })
+        }
         apiResponse = {
             status : "success", 
             message : "berhasil GET list barang", 
@@ -178,11 +212,28 @@ app.get('/barang/:id', async(req, res) =>{
     res.send(apiResponse)
 })
 
-//REMINDER : Tolong kerjain ini pls janlup 
+
 app.get('/barang', async(req, res)=>{
+    const query = req.query
+    var list_barang : Barang[]
+    const q = query.q as string
+    var perusahaan = query.perusahaan as string
+
+
+    list_barang = await prisma.barang.findMany({
+        where : {
+            nama:{
+                contains: q
+            },
+            perusahaan_id:{
+                contains: perusahaan
+            }  
+        }
+    })
+    
+
     var apiResponse : Response<Barang[]>
     try {
-        const list_barang = await prisma.barang.findMany()
         apiResponse = {
             status : "success", 
             message : "berhasil GET list barang", 
@@ -325,6 +376,7 @@ app.post('/login', async (req, res) =>{
     }
 })
 
+//FIX ME : Masih ngehack biar bisa masuk lol
 app.get('/self', async (req, res)=>{
     var apiResponse : Response<User>
     try{
@@ -349,6 +401,5 @@ app.get('/self', async (req, res)=>{
 })
 
 app.listen(port, ()=> {
-    
     console.log(`Server is running on port: ${port}`); 
 });
