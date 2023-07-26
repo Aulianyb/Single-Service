@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import express, { response } from 'express'
-import jwt from 'jsonwebtoken'; 
+import jwt, { JwtPayload } from 'jsonwebtoken'; 
 import { User, Barang, Perusahaan, Response, BarangWithPerusahaan } from './models/models';
 const port = process.env.PORT || 5000; 
 
@@ -192,7 +192,7 @@ app.get('/barang/:id', async(req, res) =>{
     var apiResponse : Response<Barang>
     try{
         const detail_barang = await prisma.barang.findUniqueOrThrow({
-            where: { kode : req.params.id}
+            where: { id : req.params.id}
         })
         const barangData : Barang = {
             id : detail_barang.id, 
@@ -383,14 +383,15 @@ app.post('/login', async (req, res) =>{
     }
 })
 
-//FIX ME : Masih ngehack biar bisa masuk lol
 app.get('/self', async (req, res)=>{
     var apiResponse : Response<User>
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload | undefined;
+    try {
+        decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
 
-    try{
-        // NOTE : Buat Debuggging aja
         const admin : User = {
-            username : "admin"
+            username : decoded.username
         }
 
         apiResponse = {
@@ -398,13 +399,16 @@ app.get('/self', async (req, res)=>{
             message : "GET self berhasil", 
             data : admin
         }
-    } catch {
+
+    } catch (error) {
+        console.error('Invalid token:', error);
         apiResponse = {
             status: "error",
             message : "login gagal", 
             data : null
         }
     }
+
     res.send(apiResponse)
 })
 
