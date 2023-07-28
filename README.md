@@ -16,6 +16,7 @@ Design pattern ini diterapkan kepada seluruh fungsi yang melakukan operasi pada 
 ## Technology Stack
 1. Prisma ORM v5.0.0
 2. TypeScript v5.1.6
+3. Node v20.2.0
 
 ## End Point
 ### GET single perusahaan (GET request)
