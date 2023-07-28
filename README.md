@@ -5,7 +5,14 @@ NIM : 18221066 <br />
 ## Cara Menjalankan 
 
 ## Design Pattern
+### Singleton
+Design pattern ini diterapkan kepada instance PrismaClient. Design pattern ini dipilih supaya tidak perlu membuat instansi PrismaClient yang baru setiap pemanggilan PrismaClient dan supaya seluruh aplikasi menggunakan PrismaClient yang sama. PrismaClient digunakan pada seeding script dan index.ts
 
+### Observer
+Design pattern ini diterapkan pada operasi yang akan berjalan ketika dilakukan penghapusan perusahaan. Design Pattern ini dipilih supaya barang yang memiliki id perusahaan yang sama akan terhapus bila perusahaan tersebut juga dihapus. Array observer dibentuk dalam rupa melakukan filtering data barang berdasarkan id perusahaan. Metode delete terhadap seluruh barang dalam array observer tersebut akan dilakukan apabila metode delete dipanggil pada perusahaan dengan id tersebut. 
+
+### Proxy
+Design pattern ini diterapkan kepada seluruh fungsi yang melakukan operasi pada endpoint. Design pattern proxy membantu agar user dapat berinteraksi dengan database tanpa harus berinteraksi secara langsung. Adanya proxy juga memungkinkan untuk dilakukan operasi seperti validasi data sebelum melakukan interaksi dengan database, sehingga memastikan bahwa perubahan yang dilakukan kepada database merupakan perubahan yang valid. 
 ## Technology Stack
 1. Prisma ORM v5.0.0
 2. TypeScript v5.1.6
