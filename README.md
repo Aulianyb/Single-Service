@@ -126,3 +126,10 @@ Design pattern ini diterapkan kepada seluruh fungsi yang melakukan operasi pada 
 ## Bonus
 ### B03 - Single Service Implementation
 Implementasi Single Service dilakukan menggunakan Typescript
+
+### B08 - SOLID 
+#### Single Responsibility Principle
+admin hanya bertanggung jawab untuk handle kelas definisi singleton adminUser, client hanya bertanggung. Client hanya bertanggung jawab untuk handle kelas definisi singleton prisma client saja. 
+#### Dependency Inversion Principle
+Kita tidak membuat instance prisma baru pada index atau seed, kita hanya memberikan instance dari client prisma yang berupa singleton sehingga database dan API bisa bergantung kepada suatu abstraksi
+
