@@ -99,3 +99,5 @@ Design pattern ini diterapkan kepada seluruh fungsi yang melakukan operasi pada 
 - Response : Mendapatkan username dari user yang saat ini logged in melalui token JWT yang tersimpan di header
 
 ## Bonus
+### B03 - Single Service Implementation
+Implementasi Single Service dilakukan menggunakan Typescript
