@@ -3,13 +3,17 @@ Nama : Aulia Nadhirah Yasmin Badrulkamal <br />
 NIM : 18221066 <br />
 
 ## Cara Menjalankan 
-### Docker
-Untuk docker tidak dapat diuji coba di komputer milik saya dikarenakan tidak cukup memori sehingga bila tidak bekerja gunakan cara alternatif tanpa docker.
-### Tanpa Docker
+⚠ Disclaimer : saya tidak bisa uji coba docker di mesin saya karena tidak cukup memory. Sudah di coba beberapa kali dan selalu menghabiskan memori yang ada di drive C saya sehingga mengakibatkan docker error dan harus di factory reset beberapa kali. Jadi alternatif yang bisa diberikan adalah menjalankannya secara lokal.
+
+![image](https://github.com/Aulianyb/Monolith/assets/42485997/5a19cf1b-2e3b-439f-b88f-6ba850874422)
+
+![image](https://github.com/Aulianyb/Monolith/assets/42485997/4cef6648-372a-4528-a2ed-b4e7e98d067a)
+
 #### Requirements
 1. mysql  Ver 8.0.30 for Win64 on x86_64 (MySQL Community Server - GPL)
 2. TypeScript v5.1.6
 3. Node v20.2.0
+4. npm v9.6.6
 
 #### How to run
 1. Clone this repository
@@ -21,6 +25,8 @@ Untuk docker tidak dapat diuji coba di komputer milik saya dikarenakan tidak cuk
 7. `npx prisma db seed` to seed the database
 8. `npm run dev` to run
 9. paste link `localhost:5000` ke dalam form API OHL-FE (if it has a different port, you can check for the correct port in the console)
+
+Untuk login kedalam akun admin, gunakan username `AdminAccount` dengan password `password123`
 ## Design Pattern
 ### Singleton
 Design pattern ini diterapkan kepada instance PrismaClient. Design pattern ini dipilih supaya tidak perlu membuat instansi PrismaClient yang baru setiap pemanggilan PrismaClient dan supaya seluruh aplikasi menggunakan PrismaClient yang sama. PrismaClient digunakan pada seeding script dan index.ts
@@ -35,6 +41,7 @@ Design pattern ini diterapkan kepada seluruh fungsi yang melakukan operasi pada 
 2. TypeScript v5.1.6
 3. Node v20.2.0
 4. mysql  Ver 8.0.30 for Win64 on x86_64 (MySQL Community Server - GPL)
+5. npm v9.6.6
 
 ## End Point
 ### GET single perusahaan (GET request)
