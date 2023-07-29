@@ -26,7 +26,7 @@ NIM : 18221066 <br />
 8. `npm run dev` to run
 9. paste link `localhost:5000` ke dalam form API OHL-FE (if it has a different port, you can check for the correct port in the console)
 
-Untuk login kedalam akun admin, gunakan username `AdminAccount` dengan password `password123`
+To login, use the username `AdminAccount` with `password123` as password
 ## Design Pattern
 ### Singleton
 Design pattern ini diterapkan kepada instance PrismaClient. Design pattern ini dipilih supaya tidak perlu membuat instansi PrismaClient yang baru setiap pemanggilan PrismaClient dan supaya seluruh aplikasi menggunakan PrismaClient yang sama. PrismaClient digunakan pada seeding script dan index.ts
