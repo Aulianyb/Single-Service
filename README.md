@@ -3,7 +3,24 @@ Nama : Aulia Nadhirah Yasmin Badrulkamal <br />
 NIM : 18221066 <br />
 
 ## Cara Menjalankan 
+### Docker
+Untuk docker tidak dapat diuji coba di komputer milik saya dikarenakan tidak cukup memori sehingga bila tidak bekerja gunakan cara alternatif tanpa docker.
+### Tanpa Docker
+#### Requirements
+1. mysql  Ver 8.0.30 for Win64 on x86_64 (MySQL Community Server - GPL)
+2. TypeScript v5.1.6
+3. Node v20.2.0
 
+#### How to run
+1. Clone this repository
+2. `npm install` on root directory
+3. `npx prisma generate` to generate prisma client
+4. Login into mysql and create database with `CREATE DATABASE single_service;`
+5. Create `.env` file on root directory and paste `DATABASE_URL="mysql://[user]:[password]@localhost:3306/single_service"` into the file with [user] and [password] as the username and password for the database
+6. `npx prisma migrate dev --name init` to migrate user, barang and perusahaan tables into the database
+7. `npx prisma db seed` to seed the database
+8. `npm run dev` to run
+9. paste link `localhost:5000` ke dalam form API OHL-FE (if it has a different port, you can check for the correct port in the console)
 ## Design Pattern
 ### Singleton
 Design pattern ini diterapkan kepada instance PrismaClient. Design pattern ini dipilih supaya tidak perlu membuat instansi PrismaClient yang baru setiap pemanggilan PrismaClient dan supaya seluruh aplikasi menggunakan PrismaClient yang sama. PrismaClient digunakan pada seeding script dan index.ts
@@ -17,6 +34,7 @@ Design pattern ini diterapkan kepada seluruh fungsi yang melakukan operasi pada 
 1. Prisma ORM v5.0.0
 2. TypeScript v5.1.6
 3. Node v20.2.0
+4. mysql  Ver 8.0.30 for Win64 on x86_64 (MySQL Community Server - GPL)
 
 ## End Point
 ### GET single perusahaan (GET request)
