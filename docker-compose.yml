@@ -1,0 +1,25 @@
+version: '3'
+services:
+  web: 
+    build: .
+    ports:
+      - "5000:5000"
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=p4ssw0rd4kunITB
+      - MYSQL_USER=root
+    ports:
+      - '3306:3306'
+  db: 
+    image: "mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: p4ssw0rd4kunITB
+    volumes:
+      - db-data:/foo
+
+volumes:
+  db-data:

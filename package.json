@@ -1,6 +1,9 @@
 {
   "name": "single-service",
   "version": "1.0.0",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "description": "Repository untuk Single Service",
   "main": "index.js",
   "scripts": {

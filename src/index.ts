@@ -1,7 +1,11 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+import { PrismaSingleton } from './client'
 import express, { response } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'; 
 import { User, Barang, Perusahaan, Response, BarangWithPerusahaan } from './models/models';
+import { AdminUser } from './admin';
+import { error } from 'console';
+import { decode } from 'punycode';
 const port = process.env.PORT || 5000; 
 
 type LoginData = {
@@ -9,7 +13,7 @@ type LoginData = {
     token: string;
 }
 
-const prisma = new PrismaClient()
+const prisma = PrismaSingleton.getInstance()
 const app = express()
 
 app.use(express.json())
@@ -102,7 +106,19 @@ app.get('/perusahaan', async(req, res) =>{
 app.post('/perusahaan', async(req, res) =>{
     const { nama, kode, alamat, no_telp} = req.body
     var apiResponse : Response<Perusahaan>
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload | undefined;
     try {
+        decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
+        if (decoded.username != AdminUser.getInstance().username){
+            throw new Error('Token tidak valid')
+        } 
+        if (!nama || !kode || !alamat || !no_telp){
+            throw new Error('Data tidak lengkap')
+        }
+        if (kode.length !== 3 || kode !== kode.toUpperCase()) {
+            throw new Error('Kode harus 3 huruf kapital');
+        }
         const result = await prisma.perusahaan.create({
             data: {
                 nama,
@@ -113,13 +129,13 @@ app.post('/perusahaan', async(req, res) =>{
         })
         apiResponse = {
             status : "success", 
-            message : "berhasil menambahkan barang",
+            message : "berhasil menambahkan perusahaan",
             data : result
         }
     } catch {
         apiResponse = {
             status : "error",
-            message : "gagal menambahkan barang", 
+            message : "gagal menambahkan perusahaan", 
             data : null
         }
     }
@@ -129,7 +145,13 @@ app.post('/perusahaan', async(req, res) =>{
 app.put('/perusahaan/:id', async(req, res)=>{
     const { nama, kode, alamat, no_telp} = req.body
     var apiResponse : Response<Perusahaan>
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload;
     try {
+        decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
+        if (decoded.username != AdminUser.getInstance().username){
+            throw new Error('Token tidak valid')
+        } 
         const perusahaanData = await prisma.perusahaan.findUnique({
             where: {id : req.params.id}
         })
@@ -161,8 +183,13 @@ app.put('/perusahaan/:id', async(req, res)=>{
 
 app.delete('/perusahaan/:id', async(req, res)=>{
     var apiResponse : Response<Perusahaan>
-
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload | undefined;
     try {
+        decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
+        if (decoded.username != AdminUser.getInstance().username){
+            throw new Error('Token tidak valid')
+        } 
         const perusahaanData = await prisma.perusahaan.delete({
             where: {id : req.params.id}
         })
@@ -225,22 +252,50 @@ app.get('/barang', async(req, res)=>{
     var list_barang : Barang[]
     const q = query.q as string
     var perusahaan = query.perusahaan as string
-
-
-    list_barang = await prisma.barang.findMany({
-        where : {
-            nama:{
-                contains: q
-            },
-            perusahaan_id:{
-                contains: perusahaan
-            }  
-        }
-    })
-    
-
     var apiResponse : Response<Barang[]>
     try {
+        if (q != undefined){
+            list_barang = await prisma.barang.findMany({
+                where : {
+                    OR : [
+                        {
+                            nama : {
+                                contains : q
+                            }
+                        }, 
+                        {
+                            kode : {
+                                contains : q
+                            }
+                        }
+                    ],
+                    perusahaan_id:{
+                        contains: perusahaan
+                    }       
+                }
+            })
+        } else {
+            list_barang = await prisma.barang.findMany({
+                where : {
+                    AND : [
+                        {
+                            nama : {
+                                contains : q
+                            }
+                        }, 
+                        {
+                            kode : {
+                                contains : q
+                            }
+                        }
+                    ],
+                    perusahaan_id:{
+                        contains: perusahaan
+                    }       
+                }
+            })  
+        }
+
         apiResponse = {
             status : "success", 
             message : "berhasil GET list barang", 
@@ -259,7 +314,33 @@ app.get('/barang', async(req, res)=>{
 app.post('/barang', async(req, res) =>{
     const {kode, nama, harga, stok, perusahaan_id} = req.body
     var apiResponse : Response<Barang>
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload;
     try {
+        decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
+        if (decoded.username != AdminUser.getInstance().username){
+            throw new Error('Token tidak valid')
+        } 
+        if (!nama || !kode || !harga || !stok || !perusahaan_id){
+            throw new Error('Data tidak lengkap')
+        }
+        
+        const perusahaan = await prisma.perusahaan.findUnique({
+            where: {
+              id: perusahaan_id,
+            },
+        });
+
+        const Barang = await prisma.barang.findUnique({
+            where: {
+              kode,
+            },
+        });
+
+        if (harga <= 0 || stok < 0 || !perusahaan || Barang) {
+            throw new Error('Data tidak valid')
+        }
+
         const result = await prisma.barang.create({
             data: {
                 kode,
@@ -272,13 +353,13 @@ app.post('/barang', async(req, res) =>{
 
         apiResponse  = {
             status : "success",
-            message : "Berhasil menambahkan barang!",
+            message : "Berhasil menambahkan barang",
             data : result
         }
     } catch {
         apiResponse = {
-            status : "success",
-            message : "Berhasil menambahkan barang!",
+            status : "error",
+            message : "Gagal menambahkan barang",
             data : null
         }
     }
@@ -288,7 +369,13 @@ app.post('/barang', async(req, res) =>{
 app.put('/barang/:id', async (req,res)=>{
     const {kode, nama, harga, stok, perusahaan_id} = req.body
     var apiResponse : Response<Barang> 
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload;
     try {
+        decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
+        if (decoded.username != AdminUser.getInstance().username){
+            throw new Error('Token tidak valid')
+        } 
         const barangData = await prisma.barang.findUnique({
             where: {id : req.params.id}
         })
@@ -321,7 +408,8 @@ app.put('/barang/:id', async (req,res)=>{
 
 app.delete('/barang/:id', async (req, res) =>  {
     var apiResponse : Response<Barang>
-    
+    const header = req.headers.authorization as string
+    let decoded: JwtPayload;
     try {
         const barangData = await prisma.barang.delete({
             where: {id : req.params.id}
@@ -365,6 +453,8 @@ app.post('/login', async (req, res) =>{
                 message : "login berhasil", 
                 data : logData
             }
+
+            const adminUser = new AdminUser(username); 
             
             res.cookie("jwt", "token",{
                 httpOnly: true
@@ -389,15 +479,14 @@ app.get('/self', async (req, res)=>{
     let decoded: JwtPayload | undefined;
     try {
         decoded = jwt.verify(header, 'secret-Key') as JwtPayload;
-
-        const admin : User = {
-            username : decoded.username
-        }
-
-        apiResponse = {
-            status : "success", 
-            message : "GET self berhasil", 
-            data : admin
+        if (decoded.username != AdminUser.getInstance().username){
+            throw new Error('Invalid Token'); 
+        } else {
+            apiResponse = {
+                status : "success", 
+                message : "GET self berhasil", 
+                data : AdminUser.getInstance()
+            }
         }
 
     } catch (error) {
